@@ -49,7 +49,7 @@ void Manager::startAccept()
 
         Socks4 newSession{ std::move(socket) };
 
-        [this, other = shared_from_this()](void) { startAccept(); };  // Start accepting again
+        [this, other = shared_from_this()](void) { startAccept(); }();  // Start accepting again
     };
     m_acceptor.async_accept(lambda);
     std::cout << "Accept setup!" << std::endl;
