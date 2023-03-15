@@ -36,7 +36,7 @@ void Manager::startAccept()
     tcp::socket newSock = tcp::socket{ m_io };
     // newSock.set_option(tcp::socket::reuse_address(true));
 
-    auto lambda = [this, other = shared_from_this()](asio::error_code ec, tcp::socket socket) {
+    auto lambda = [self = shared_from_this()](asio::error_code ec, tcp::socket socket) {
         if (ec)
         {
             std::cout << "Failed to accept new connection!" << ec.message() << std::endl;
@@ -47,9 +47,15 @@ void Manager::startAccept()
             std::cout << "New connection!" << std::endl;
         }
 
-        Socks4 newSession{ std::move(socket) };
+        // Socks4 newSession{ std::move(
+        //     socket) };  // FIX, skal være shared ptr... hvorfor så mye move...
+        auto newSession = std::make_shared<socks::Socks4>(self->m_io, std::move(socket));
+        newSession->recvHello();  // start first coroutine
 
-        [this, other = shared_from_this()](void) { startAccept(); }();  // Start accepting again
+        self->startAccept();
+        // [this, other = shared_from_this()](void) {
+        //     startAccept();
+        // }();  // Start accepting again, Prøve uten denne...
     };
     m_acceptor.async_accept(lambda);
     std::cout << "Accept setup!" << std::endl;
