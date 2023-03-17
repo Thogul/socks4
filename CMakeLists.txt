@@ -9,3 +9,6 @@ target_include_directories(asio INTERFACE "${CMAKE_SOURCE_DIR}/lib/asio/asio/inc
 target_link_libraries(asio INTERFACE pthread)
 add_executable(socks4 src/main.cpp)
 target_link_libraries(socks4 asio)
+
+add_executable(client src/client.cpp)
+target_link_libraries(client asio)
