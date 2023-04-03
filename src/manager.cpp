@@ -26,7 +26,7 @@ void Manager::startAccept()
         // Socks4 newSession{ std::move(
         //     socket) };  // FIX, skal være shared ptr... hvorfor så mye move...
         auto newSession = std::make_shared<socks::Socks4>(self->m_io, std::move(socket));
-        newSession->recvHello();  // start first coroutine
+        newSession->recvFromClient();  // start first callback
 
         self->startAccept();
         // [this, other = shared_from_this()](void) {
